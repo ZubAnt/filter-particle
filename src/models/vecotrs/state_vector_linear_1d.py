@@ -14,3 +14,7 @@ class StateVectorLinear1D(BaseStateVector):
     @property
     def time(self) -> float:
         return self._t
+
+    @value.setter
+    def value(self, value):
+        self._value = value

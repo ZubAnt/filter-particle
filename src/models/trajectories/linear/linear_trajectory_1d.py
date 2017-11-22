@@ -19,7 +19,5 @@ class LinearTrajectory1D(BaseLinearTrajectory[StateVectorLinear1D]):
         return [vector.time for vector in self.vectors]
 
     def show(self) -> None:
-        print(self.times)
-        print(self.values)
         plt.plot(self.times, self.values)
         plt.show()
