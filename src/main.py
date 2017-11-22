@@ -1,9 +1,10 @@
-from .trajectory import Trajectory
-from coord import Coord
-import matplotlib.pyplot as p
+from src.factories.trajectories.linear.linear_trajectory_1d_factory import LinearTrajectory1DFactory
+from src.models.vecotrs.state_vector_linear_1d import StateVectorLinear1D
 
-x, y = Trajectory(point=Coord(1, 1), k=1, step=1, size=100).generate_linear_trajectory()
+init_state = StateVectorLinear1D(time=1.0, value=1.0)
+trajectory = LinearTrajectory1DFactory(state=init_state, size=100, k=1, dt=0.5).create()
+trajectory.show()
 
-p.plot(x, y)
-p.show()
+# import matplotlib.pyplot as plt
+# plt.plot(trajectory.times, trajectory.values)
 

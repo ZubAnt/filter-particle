@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import List, TypeVar, Generic, Optional
 
 S = TypeVar("State")
@@ -30,3 +31,7 @@ class BaseLinearTrajectory(Generic[S]):
 
     def append(self, state: S) -> None:
         self._vectors.append(state)
+
+    @abstractmethod
+    def show(self) -> None:
+        raise NotImplementedError

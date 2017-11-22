@@ -1,32 +1,28 @@
 from abc import abstractmethod
 
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Type
 
-from src.models.trajectories.linear.base_linear_trajectory import BaseLinearTrajectory
 S = TypeVar("State")
+T = TypeVar("Trajectory")
 
 
-class BaseLinearTrajectoryFactory(Generic[S]):
+class BaseLinearTrajectoryFactory(Generic[S, T]):
 
-    def __init__(self, state: S, size: int):
+    def __init__(self, state: S, size: int, trajectory: Type[T]):
         """        
         :param state: начальный вектор состояния 
         :param size: количество отметок траектории
         """
         self._size = size
         self._state = state
-
-    # @property
-    # @abstractmethod
-    # def next(self, last: S) -> S:
-    #     raise NotImplementedError
+        self._trajectory = trajectory
 
     @abstractmethod
     def next(self, last: S) -> S:
         raise NotImplementedError
 
-    def create(self) -> BaseLinearTrajectory:
-        trajectory = BaseLinearTrajectory()
+    def create(self) -> T:
+        trajectory = self._trajectory()  # type: ignore
         trajectory.append(self._state)
 
         for i in range(self._size):
