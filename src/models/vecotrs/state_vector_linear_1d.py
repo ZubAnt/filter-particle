@@ -7,6 +7,12 @@ class StateVectorLinear1D(BaseStateVector):
         self._val = value
         self._t = time
 
+    def __str__(self):
+        return f"{{value: {self.value}, time: {self.time}}}"
+
+    def __repr__(self):
+        return f"{{value: {self.value}, time: {self.time}}}"
+
     @property
     def value(self) -> float:
         return self._val
