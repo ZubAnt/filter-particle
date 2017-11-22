@@ -1,4 +1,4 @@
-from trajectory import Trajectory
+from .trajectory import Trajectory
 from coord import Coord
 import matplotlib.pyplot as p
 

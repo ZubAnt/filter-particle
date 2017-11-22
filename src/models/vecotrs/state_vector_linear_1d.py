@@ -1,7 +1,7 @@
-from src.models.base_state_vector import BaseStateVector
+from src.models.vecotrs.base_state_vector import BaseStateVector
 
 
-class StateVectorLinear(BaseStateVector):
+class StateVectorLinear1D(BaseStateVector):
 
     def __init__(self, value: float, time: float) -> None:
         self._val = value
