@@ -15,7 +15,6 @@ class MeasureLinear1DFactory(object):
         measurements = LinearTrajectory1D()
         for s in self._trajectory.vectors:
             new_val = np.random.normal(loc=s.value, scale=self._sigmaV)
-            # state = StateVectorLinear1D(s.time, s.value + np.random.uniform(- self._sigmaV, self._sigmaV))
             state = StateVectorLinear1D(s.time, new_val)
             measurements.append(state)
 

@@ -31,16 +31,15 @@ class State(object):
 class FilterParticle(object):
 
     def __init__(self, measurements: LinearTrajectory1D, part_number: int,
-                 sigma_v: float, sigma_k: float, t0: float, dt: float) -> None:
+                 sigma_v: float, t0: float, dt: float) -> None:
         """
         :param measurements: Отметки измерений траектории
         :param part_number: количество генерируемых случайных векторов
         :param sigma_v: СКО параметра "value"
-        :param sigma_k: СКО параметра "k"
+        :param t0: начальный момент времени
         :param dt: шаг времени
         """
         self._sigmaV = sigma_v
-        self._sigmaK = sigma_k
         self._partNumber = part_number
         self._measurements = measurements
         self._t0 = t0
@@ -51,24 +50,36 @@ class FilterParticle(object):
         if self._measurements.size <= 2:
             raise Exception
 
+        print(f"filter progress 0  %")
         trajectory_accuracy = LinearTrajectory1D()
 
         vectors_of_measurements = self._measurements.vectors
-        # print(vectors_of_measurements)
+
         prev_measure = vectors_of_measurements[0]
+        var = prev_measure.value
+        trajectory_accuracy.append(prev_measure)
         prev_measure_state = State(value=prev_measure.value, k=0)
 
+        curr_step_pc = 10
         for i in range(1, self._measurements.size):
+
+            curr_pc = (i / self._measurements.size) * 100
+            if curr_pc > curr_step_pc:
+                print(f"filter progress {curr_step_pc} %")
+                curr_step_pc += 10
+
             curr_measure = vectors_of_measurements[i]
             k = (curr_measure.value - prev_measure.value) / self._dt
-            # print(f"k = {k}")
             curr_measure_state = State(value=curr_measure.value, k=k)
 
             state_accuracy = self.get_accuracy_value(prev_measure_state=prev_measure_state,
                                                      curr_measure_state=curr_measure_state)
-            accuracy = StateVectorLinear1D(value=state_accuracy.value, time=self._t0 + i * self._dt)
+            accuracy = StateVectorLinear1D(value=state_accuracy.value + var, time=self._t0 + i * self._dt)
             trajectory_accuracy.append(accuracy)
             prev_measure_state = state_accuracy
+
+        print(f"filter progress {100}%")
+        print("Completed")
 
         return trajectory_accuracy
 
@@ -89,26 +100,10 @@ class FilterParticle(object):
         v_accuracy = reduce(lambda accumulator, i: accumulator + normalized_weights[i] * ext_random_vectors[i].value,
                             range(len(normalized_weights)), 0)
 
-        # k_accuracy = reduce(lambda accumulator, i: accumulator + normalized_weights[i] * ext_random_vectors[i].k,
-        #                     range(len(normalized_weights)), 0)
+        k_accuracy = reduce(lambda accumulator, i: accumulator + normalized_weights[i] * ext_random_vectors[i].k,
+                            range(len(normalized_weights)), 0)
 
-        k_accuracy = (v_accuracy - prev_measure_state.value) / self._dt
-
-        print(f"prev_measure_state = {prev_measure_state}")
-        print(f"curr_measure_state = {curr_measure_state}")
-        print(f"normalized_weights = {normalized_weights}")
-        print("ext_rnd_vec_values = ", end='')
-        for state in ext_random_vectors:
-            print(f"{state.value}, ", end='')
-        print()
-
-        print("ext_rnd_vectors__k = ", end='')
-        for state in ext_random_vectors:
-            print(f"{state.k}, ", end='')
-        print()
-        print(f"v_accuracy = {v_accuracy}, k_accuracy = {k_accuracy}")
-        print()
-
+        # k_accuracy = (v_accuracy - prev_measure_state.value) / self._dt
         state_accuracy = State(value=v_accuracy, k=k_accuracy)
         return state_accuracy
 
@@ -152,9 +147,7 @@ class FilterParticle(object):
 
         vectors = []
         for i in range(self._partNumber):
-            # new_v = v + np.random.uniform(- self._sigmaV / 2, self._sigmaV / 2)
             new_v = np.random.normal(loc=v, scale=self._sigmaV)
-            # new_k = k + np.random.uniform(- self._sigmaK, self._sigmaK)
             new_k = (new_v - v) / self._dt
             vectors.append(State(value=new_v, k=new_k))
 
