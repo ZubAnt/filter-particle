@@ -8,12 +8,12 @@ DT = 20    # Шаг времени
 
 init_state = StateVectorLinear1D(time=1.0, value=1.0)
 
-trajectory = LinearTrajectory1DFactory(state=init_state, size=25, k=1, dt=DT).create()
+trajectory = LinearTrajectory1DFactory(state=init_state, size=25, k=0.1, dt=DT).create()
 
-measurements = MeasureLinear1DFactory(trajectory, sigma_v=20).create()
+measurements = MeasureLinear1DFactory(trajectory, sigma_v=5).create()
 
 filtered_measurements = FilterParticle(measurements=measurements,
-                                       part_number=10000, sigma_v=100, t0=init_state.time, dt=DT).filter()
+                                       part_number=10000, sigma_v=5, t0=init_state.time, dt=DT).filter()
 
 traj_time, traj_val = trajectory.params()
 meas_time, meas_val = measurements.params()

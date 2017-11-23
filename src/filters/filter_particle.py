@@ -100,10 +100,10 @@ class FilterParticle(object):
         v_accuracy = reduce(lambda accumulator, i: accumulator + normalized_weights[i] * ext_random_vectors[i].value,
                             range(len(normalized_weights)), 0)
 
-        k_accuracy = reduce(lambda accumulator, i: accumulator + normalized_weights[i] * ext_random_vectors[i].k,
-                            range(len(normalized_weights)), 0)
+        # k_accuracy = reduce(lambda accumulator, i: accumulator + normalized_weights[i] * ext_random_vectors[i].k,
+        #                     range(len(normalized_weights)), 0)
 
-        # k_accuracy = (v_accuracy - prev_measure_state.value) / self._dt
+        k_accuracy = (v_accuracy - prev_measure_state.value) / self._dt
         state_accuracy = State(value=v_accuracy, k=k_accuracy)
         return state_accuracy
 
